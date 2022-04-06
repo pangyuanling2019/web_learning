@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>自我介绍</title>
+    <style>
+        .move {
+            width: 100px;
+            height: 100px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+            background: url("./1.jpeg");
+            background-size: 100%;
+            -webkit-filter: drop-shadow(0 0 40px #EEBF23);
+            filter: drop-shadow(0 0 40px #EEBF23);
+        }
+        
+        .table {
+            width: 240px;
+            position: fixed;
+            top: 300px;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            font-size: 20px;
+        }
+        
+        .table table {
+            border-collapse: collapse;
+        }
+        
+        .table table td {
+            padding: 6px 10px;
+        }
+        
+        button {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="move"></div>
+    <div class="table">
+        <table border=”1″>
+            <caption>
+                自我介绍
+            </caption>
+            <tr>
+                <td>姓名:</td>
+                <td>庞愿领</td>
+
+            </tr>
+            <tr>
+                <td>出生年月:</td>
+                <td>1994年1月</td>
+            </tr>
+            <tr>
+                <td>籍贯:</td>
+                <td>河北邯郸</td>
+            </tr>
+            <tr>
+                <td>在职岗位:</td>
+                <td>前端开发</td>
+            </tr>
+        </table>
+        <button id="but1">点击移动</button>
+        <button id="but2">点击停止</button>
+    </div>
+    <script>
+        var div = document.querySelector(".move"); //移动球的dom节点
+        var timer; //防抖
+        var oLeft = 0; //停止记录横向坐标值
+        var oTop = 0; //停止记录纵向坐标值
+
+        //球体配置信息
+        var config = {
+            xd: 2,
+            yd: 2,
+            width: 100,
+            height: 100,
+            duration: 10,
+        }
+
+        /**
+         *圆球移动函数
+         * @param {Number} x 起始横坐标
+         * @param {Number} y 起始纵坐标
+         * @param {Number} xd 横向移动距离
+         * @param {Number} yd 纵向移动距离
+         * @param {Number} width  球体宽度
+         * @param {Number} height  球体高度
+         * @param {Number} duration   移动的间隔事件(移动速度)
+         * 
+         * 1.圆球移动时的left和top， 每次加等于移动的距离，在赋值给圆球样式的left和top值。
+         * 2.判断边界，这个圆球的y坐标移动到 整个视口减去自身的高度时，把真个减去的距离视口的高度在赋值给自身，让移动的距离变为负数。
+         * 3.圆球的x坐标同理；
+         */
+        function moves(x, y, xd, yd, width, height, duration) {
+            timer = setInterval(function() {
+                x += xd;
+                y += yd;
+                //边界判断
+                if (y >= document.documentElement.clientHeight - height) {
+                    y = document.documentElement.clientHeight - height;
+                    yd = -(yd + 2);
+                }
+                //判断圆球滚动最上面，当top等于零，上面同理。
+                if (y <= 0) {
+                    y = 0;
+                    yd = -(yd + 2);
+                }
+                if (x <= 0) {
+                    x = 0;
+                    xd = -(xd + 2);
+                }
+                if (x >= document.documentElement.clientWidth - width) {
+                    x = document.documentElement.clientWidth - width;
+                    xd = -(xd + 2);
+                }
+                div.style.left = x + "px";
+                div.style.top = y + "px";
+                div.style.width = width + "px";
+                div.style.height = height + "px";
+            }, duration);
+        }
+
+        //注册开始移动事件
+        but1.onclick = function() {
+            //防止重复点击， 判断时候有定时器在执行。
+            if (timer) {
+                return;
+            }
+            moves(oLeft, oTop, config.xd, config.yd, config.width, config.height, config.duration);
+        }
+
+        //注册停止移动事件
+        but2.onclick = function() {
+            oLeft = parseInt(div.style.left);
+            oTop = parseInt(div.style.top);
+            clearInterval(timer);
+            timer = null;
+        }
+    </script>
+</body>
+
+</html>
